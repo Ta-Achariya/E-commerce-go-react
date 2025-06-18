@@ -35,18 +35,17 @@ func Initialize(router *fiber.App) {
 	//cart
 	protected.Post("/cart/item", handlers.AddToCart)
 	protected.Get("/cart", handlers.GetCartByUserId)
-
 	protected.Put("/cart/items/:item_id", handlers.UpdateCartItemQuantity)
-	protected.Delete("/cart/:user_id/items/:item_id", handlers.RemoveItemFromCart)
-	protected.Delete("/cart/:user_id/items", handlers.ClearCart)
+	protected.Delete("/cart/items/:item_id", handlers.RemoveItemFromCart)
+	protected.Delete("/cart/items", handlers.ClearCart)
 
 	//order
-	protected.Post("/order/:user_id/items", handlers.CreateOrder)
-	protected.Get("/order/:user_id", handlers.GetOrderByUserId)
+	protected.Get("/order", handlers.GetOrderByUserId)
 
 
 	//payment
 	protected.Post("/checkout", handlers.CreateCheckoutSession)
+	protected.Get("/payment/success", handlers.PaymentSuccess)
 
 
 

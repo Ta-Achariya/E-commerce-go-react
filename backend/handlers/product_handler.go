@@ -63,6 +63,7 @@ func GetProducts(c *fiber.Ctx) error{
 
 }
 
+
 func GetProductById(c *fiber.Ctx) error{
 	id := c.Params("id")
 	var product model.Product

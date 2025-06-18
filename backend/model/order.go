@@ -9,6 +9,7 @@ type Order struct {
     UserID     uint
     Status     string
     TotalAmount float64
+    StripeSessionID string    `json:"stripe_session_id" gorm:"unique"`
 
     OrderItems []OrderItem
 }

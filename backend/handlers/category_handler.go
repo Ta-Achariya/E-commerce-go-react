@@ -40,6 +40,7 @@ func GetAllCategory(c *fiber.Ctx) error{
 }
 
 func GetCategoryById(c *fiber.Ctx) error{
+	
 	id := c.Params("id")
 	category := model.Category{}
 

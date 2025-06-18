@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router"
 import { Button } from "../components/ui/button"
+import { ShoppingCart } from 'lucide-react';
+
+import { useAuth } from '../context/AuthContext';
 
 const Products = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null); //state for showing error
+  const [successMessage, setSuccessMessage] = useState(null); //for render after add to cart success
+
 
   const [categories, setCategories] = useState([])
-  
-  const[selectcategory,setSelectcategory] = useState(null)
-  const[filterproducts,setFilterProducts] = useState([])
+
+  const [selectedCategory, setSelectedCategory] = useState(null)
+
+  const [filteredProducts, setFilterProducts] = useState([])
+
+
+  const { authenticatedFetch, isAuthenticated } = useAuth();
+
 
 
 
@@ -43,15 +54,54 @@ const Products = () => {
   }, [])
 
   useEffect(() => {
-    if(selectcategory === null){
+    if (selectedCategory === null) {
       setFilterProducts(products)
     } else {
-      const filterprod = products.filter(product => 
-        product.category.ID === selectcategory
+      const filterprod = products.filter(product =>
+        product.category.ID === selectedCategory
       )
       setFilterProducts(filterprod)
     }
-  }, [products,selectcategory])
+  }, [products, selectedCategory])
+
+
+
+  const handleAddToCart = async (product_id) => {
+    setError(null); // Clear previous errors
+    if (!isAuthenticated) {
+      setError('Please log in before you add items to your cart.');
+      return;
+    }
+
+    try {
+      const response = await authenticatedFetch('http://localhost:8080/api/cart/item', {
+        method: 'POST',
+        body: JSON.stringify({ quantity: 1, product_id: product_id }),
+      });
+
+      if (response.ok) {
+        console.log('Product added to cart successfully!');
+        setSuccessMessage('Product added to cart successfully!');
+        // Clear the success message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 3000);
+
+
+
+
+      } else {
+        const errorData = await response.json();
+        const errorMessage = errorData.message || 'Failed to add item to cart.';
+        setError(errorMessage);
+        console.error('Add to cart failed:', errorMessage);
+      }
+    } catch (err) {
+      console.error('Add to cart error:', err);
+      setError('An error occurred while adding to cart. Please try again.');
+    }
+  };
+
 
 
   if (loading) {
@@ -59,65 +109,86 @@ const Products = () => {
   }
 
 
-
-
-
   return (
-    <>
-      <Button
-        key="all"
-        variant={selectcategory === null? "default" : "outline"}
-        onClick={()=>{setSelectcategory(null)}}
-      >
-        All
-      </Button>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/*<h2 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">Our Products</h2> */}
 
-
-      {categories.map((category) => (
-        <Button 
-          key={category.ID}
-          variant={selectcategory === category.ID ? "default" : "outline"}
-          onClick={() => {setSelectcategory(category.ID)}} 
+      {/* --- Category Filters --- */}
+      <div className="flex flex-wrap gap-3 mb-8 justify-center">
+        <Button
+          key="all"
+          variant={selectedCategory === null ? "default" : "outline"}
+          onClick={() => setSelectedCategory(null)}
+          className="px-6 py-2 rounded-lg text-lg"
         >
-          {console.log(category.ID)}
-          {category.name}
+          All
+        </Button>
+        {categories.map((category) => (
+          <Button
+            key={category.ID}
+            variant={selectedCategory === category.ID ? "default" : "outline"}
+            onClick={() => setSelectedCategory(category.ID)}
+            className="px-6 py-2 rounded-lg text-lg"
+          >
+            {category.name}
           </Button>
-      ))}
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold mb-6">All Products</h2>
-
-        {filterproducts.length === 0 ? (
-          <p>No products available.</p>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {filterproducts.map((product) => (
-              <div key={product.ID} className="group relative">
-                <img
-                  alt={product.image}
-                  src={product.images?.[0] || product.image}
-                  className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
-                />
-                <div className="mt-4 flex justify-between">
-                  <div>
-                    <h3 className="text-sm text-gray-700">
-                      <Link to={product.href}>
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.title}
-                      </Link>
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">{product.description}</p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-900">฿{product.price}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        ))}
       </div>
 
-    </>
-  )
+      {/* --- Error Display --- */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline ml-2">{error}</span>
+        </div>
+      )}
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+          <strong className="font-bold">Success!</strong>
+          <span className="block sm:inline ml-2">{successMessage}</span>
+        </div>
+      )}
+
+      {/* --- Product Grid --- */}
+      {filteredProducts.length === 0 && !loading ? (
+        <p className="text-center text-xl text-gray-600 mt-12">No products available in this category.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+          {filteredProducts.map((product) => (
+            <div key={product.ID} className="group relative bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+              <Link to={product.href} className="block"> {/* Added block to Link for proper layout */}
+                <div className="aspect-square w-full bg-gray-100 overflow-hidden rounded-t-lg">
+                  <img
+                    alt={product.name}
+                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400'}
+                    className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity duration-300"
+                  />
+                </div>
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {product.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-600 line-clamp-2">{product.description}</p>
+                </div>
+              </Link>
+
+              {/* Price and Add to Cart button*/}
+              <div className="p-4 pt-0 flex items-center justify-between border-t border-gray-100">
+                <p className="text-xl font-bold text-gray-900">฿{product.price}</p>
+                <Button
+                  onClick={() => handleAddToCart(product.ID)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Products

@@ -13,7 +13,6 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 
-change all function that userid from param to getfrom jwt
-create fetch api in cart page (updateItemQunatity , RemoveItem , AddtoCart)
+
 
 

@@ -18,7 +18,6 @@ type CartItem struct {
 
 type AddCartItem struct {
     Quantity   int  `json:"quantity"`
-    UserID     uint `json:"user_id"`
     ProductID  uint `json:"product_id"`
 }
 
