@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 
-//const stripePromise = loadStripe(""); 
 
 const Checkout = () => {
   const [loading,setLoading] = useState(false)

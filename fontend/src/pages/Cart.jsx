@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, Minus, ShoppingCart, ArrowLeft, CreditCard, Loader2 } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, CreditCard, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 
@@ -22,7 +22,7 @@ export default function CartPage() {
                 setLoading(true);
                 setError(null);
 
-                const response = await authenticatedFetch('http://localhost:8080/api/cart');
+                const response = await authenticatedFetch('http://localhost:8080/api/cart', { method: "GET" });
 
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -64,41 +64,41 @@ export default function CartPage() {
         if (newQuantity < 1) return;
 
         try {
-            // Optimistically update UI
+            const response = await authenticatedFetch(`http://localhost:8080/api/cart/items/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({quantity: newQuantity })
+            });
+
+            // update UI
             setCartItems(items =>
                 items.map(item =>
                     item.id === id ? { ...item, quantity: newQuantity } : item
                 )
             );
 
-            // TODO: Make API call to update quantity
-            //const response = await authenticatedFetch(`http://localhost:8080/api/cart/updatequantity`, {
-            //   method: 'PUT',
-            //   body: JSON.stringify({ item_id: id, quantity: newQuantity })
-            // });
 
         } catch (error) {
             console.error('Error updating quantity:', error);
             // Revert optimistic update on error
-            // You might want to refresh the cart or show an error message
+            // might want to refresh the cart or show an error message
         }
     };
 
     const removeItem = async (id) => {
         try {
-            // Optimistically update UI
-            setCartItems(items => items.filter(item => item.id !== id));
 
-            // TODO: Make API call to remove item
-            // await authenticatedFetch(`http://localhost:8080/api/cart/removeitem`, {
-            //   method: 'DELETE',
-            //   body: JSON.stringify({ item_id: id })
-            // });
+            const response = await authenticatedFetch(`http://localhost:8080/api/cart/items/${id}`, {
+                method: 'DELETE',
+            });
+
+
+            //update UI
+            setCartItems(items => items.filter(item => item.id !== id));
 
         } catch (error) {
             console.error('Error removing item:', error);
             // Revert optimistic update on error
-            // You might want to refresh the cart or show an error message
+            //  might want to refresh the cart or show an error message
         }
     };
 
@@ -107,6 +107,7 @@ export default function CartPage() {
 
 
     const handleCheckout = async () => {
+        setLoading(true)
         try {
             const response = await authenticatedFetch('http://localhost:8080/api/checkout', {
                 method: 'POST'
@@ -119,6 +120,8 @@ export default function CartPage() {
         } catch (error) {
             console.error('Checkout error:', error);
         }
+        setLoading(false)
+
     };
 
     // Loading state
@@ -194,7 +197,7 @@ export default function CartPage() {
                                                         <div className="flex items-center space-x-3">
                                                             <button
                                                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                                className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                                                                className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors"
                                                             >
                                                                 <Minus className="w-4 h-4 text-gray-600" />
                                                             </button>
@@ -203,7 +206,7 @@ export default function CartPage() {
                                                             </span>
                                                             <button
                                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                                className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                                                                className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-200 transition-colors"
                                                             >
                                                                 <Plus className="w-4 h-4 text-gray-600" />
                                                             </button>
@@ -215,7 +218,7 @@ export default function CartPage() {
                                                             </p>
                                                             <button
                                                                 onClick={() => removeItem(item.id)}
-                                                                className="text-red-500 hover:text-red-700 transition-colors p-1"
+                                                                className="text-red-500 hover:text-red-300 transition-colors p-1"
                                                             >
                                                                 <Trash2 className="w-5 h-5" />
                                                             </button>
@@ -260,9 +263,9 @@ export default function CartPage() {
                                     </div>
                                 </div>
 
-                                <button onClick={handleCheckout} className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 mt-6">
+                                <button onClick={handleCheckout} disabled={loading} className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 mt-6">
                                     <CreditCard className="w-5 h-5" />
-                                    <span>Proceed to Checkout</span>
+                                    <span>{loading? "Processing" : "Pay with Stripe"}</span>
                                 </button>
 
                             </div>

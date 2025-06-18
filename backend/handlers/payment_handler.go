@@ -12,16 +12,6 @@ import (
 	"github.com/stripe/stripe-go/v82"
 	"github.com/stripe/stripe-go/v82/checkout/session"
 )
-/*
-type LineItem struct {
-	Name     string `json:"name"`
-	Price    int64  `json:"price"`
-	Quantity int64  `json:"quantity"`
-}
-
-type CheckoutRequest struct {
-	Items []LineItem `json:"items"`
-}*/
 
 //create the url checkout session
 //take data from fontend --> generate the seesion --> return the url
@@ -86,8 +76,8 @@ func CreateCheckoutSession(c *fiber.Ctx) error {
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems:          lineItems,
 		Mode:               stripe.String(stripe.CheckoutSessionModePayment),
-		SuccessURL:         stripe.String("http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:          stripe.String("http://localhost:3000/cancel"),
+		SuccessURL:         stripe.String("http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}"),
+		CancelURL:          stripe.String("http://localhost:5173/cancel"),
 		Metadata: map[string]string{
 			"user_id" : userIDStr,
 			"cart_id" : fmt.Sprintf("%d" , cart.ID),
@@ -103,5 +93,58 @@ func CreateCheckoutSession(c *fiber.Ctx) error {
 		"checkout_url": s.URL,
 		"session_id" : s.ID,
 
+	})
+}
+
+
+
+
+// HandlePaymentSuccess - Called after successful Stripe payment
+func PaymentSuccess(c *fiber.Ctx) error {
+	sessionID := c.Query("session_id")
+	if sessionID == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Session ID is required")
+	}
+
+	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	// Retrieve the session from Stripe
+	sess, err := session.Get(sessionID, nil)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to retrieve session")
+	}
+
+	// Check if payment was successful
+	if sess.PaymentStatus != "paid" {
+		return fiber.NewError(fiber.StatusBadRequest, "Payment not completed")
+	}
+
+	// Extract user_id and cart_id from metadata
+	userIDStr := sess.Metadata["user_id"]
+	cartIDStr := sess.Metadata["cart_id"]
+
+	if userIDStr == "" || cartIDStr == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid session metadata")
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid user ID")
+	}
+
+	cartID, err := strconv.ParseUint(cartIDStr, 10, 32)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid cart ID")
+	}
+
+	// Create the order /CreateOrder
+	order, err := createOrderFromCart(uint(userID), uint(cartID), sessionID )
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Order created successfully",
+		"order":   order,
 	})
 }

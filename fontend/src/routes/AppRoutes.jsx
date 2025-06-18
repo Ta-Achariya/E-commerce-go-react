@@ -11,6 +11,7 @@ import LayoutAdmin from "../layouts/LayoutAdmin"
 import ProductAdmin from "../pages/adminpages/productsAdmin"
 import HomeAdmin from "../pages/adminpages/homeAdmin"
 import CategoryAdmin from "../pages/adminpages/categoryAdmin"
+import Success from "../pages/payment/success"
 
 const AppRoutes = () => {
 
@@ -24,6 +25,7 @@ const AppRoutes = () => {
                     <Route path="checkout" element={<Checkout />} />
                     <Route path="register" element={<Register />} />
                     <Route path="login" element={<Login />} />
+                    <Route path="success" element={<Success />} />
                 </Route>
 
 
@@ -35,6 +37,12 @@ const AppRoutes = () => {
                     <Route path="category" element={<CategoryAdmin/>} />
                     <Route path="product" element={<ProductAdmin/>} />
                 </Route>
+
+                {/*
+                <Route path="admin" element={<HomeAdmin/>}/>
+                <Route path="category" element={<CategoryAdmin/>} />
+                <Route path="product" element={<ProductAdmin/>} />
+                */}
                 
 
 

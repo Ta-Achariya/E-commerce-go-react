@@ -16,6 +16,11 @@ func AddToCart(c *fiber.Ctx) error {
 	db := database.DB
 
 	//userID := c.Locals("user_id").(string)
+	userID, err := middleware.GetUserIDFromToken(c)
+	if err != nil {
+		return err
+	}
+
 
 	addCartItem := model.AddCartItem{}
 	product := model.Product{}
@@ -51,9 +56,9 @@ func AddToCart(c *fiber.Ctx) error {
 	//create cart if don't exit by finding cart with userID and status = true.
 	cart := model.Cart{}
 
-	if err := db.Where("user_id = ? AND status = ?", addCartItem.UserID, true).First(&cart).Error; err != nil {
+	if err := db.Where("user_id = ? AND status = ?", userID, true).First(&cart).Error; err != nil {
 		cart.Status = true
-		cart.UserID = addCartItem.UserID
+		cart.UserID = userID
 
 		if err := db.Create(&cart).Error; err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to creted cart")
