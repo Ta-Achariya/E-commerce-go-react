@@ -1,25 +1,27 @@
-version: '3.8'
-
 services:
   backend:
-    image: golang:1.22-alpine
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-    command: go run main.go
+    build:
+      context: ./backend
+      dockerfile: dev.Dockerfile
+    container_name: backend
     ports:
       - "8080:8080"
+    volumes: #the current directory is mounted to app inside container
+      - ./backend:/app
     environment:
       - DB_HOST=postgres
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - AZURE_CLIENT_ID=${APPID}
+      - AZURE_CLIENT_SECRET=${AZURE_SECRET}
+      - AZURE_TENANT_ID=${TENANT}
+      - ACCOUNTURL=${ACCOUNTURL}
+      - CONTAINERNAME=${CONTAINERNAME}
     depends_on:
       - postgres
     restart: unless-stopped
-      
-
 
   postgres:
     image: postgres:16-alpine

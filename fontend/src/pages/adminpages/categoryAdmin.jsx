@@ -40,7 +40,7 @@ const CategoryAdmin = () => {
     useEffect(() => {
         fetch("http://localhost:8080/product")
             .then((res) => res.json())
-            .then((data) => setCategories(data))
+            .then((data) => setProducts(data))
             .catch((err) => console.error("Failed to fetch categories:", err));
     }, []);
 

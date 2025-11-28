@@ -42,7 +42,7 @@ export default function CartPage() {
                         name: item.Product.name,
                         price: item.Product.price,
                         quantity: item.Quantity,
-                        image: item.Product.ImageURL || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop&crop=center",
+                        image: item.Product.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop&crop=center",
                     })) || [];
 
                     setCartItems(transformedItems);

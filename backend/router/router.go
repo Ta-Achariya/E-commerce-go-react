@@ -51,7 +51,6 @@ func Initialize(router *fiber.App) {
 
 
 
-
 	//admin-only routes (prodcut and category management)
 	admin := protected.Group("/admin")
 	admin.Use(middleware.AdminAuthen)
@@ -65,5 +64,10 @@ func Initialize(router *fiber.App) {
 	admin.Post("/category", handlers.CreateCategory)
 	admin.Put("/category/:id", handlers.UpdateCategory)
 	admin.Delete("/category/:id", handlers.DeleteCategory)
+	
+	// admin images hanlers
+	admin.Post("/upload-image",handlers.UploadImage)
+	
+	
 
 }
