@@ -2,6 +2,7 @@ import React, { useState, useContext, createContext, useEffect } from "react";
 
 // Create the context
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 // Custom hook to use auth context
 export const useAuth = () => {
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
@@ -99,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       headers["Content-Type"] = "application/json";
     }
 
-    const fullUrl = endpoint.startsWith("http") ? endpoint : `${API_URL}${endpoint}`;
+    const fullUrl = url.startsWith("http") ? url : `${API_URL}${url}`;
 
     const response = await fetch(fullUrl, {
       ...options,
