@@ -14,6 +14,7 @@ const ProductAdmin = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const { authenticatedFetch } = useAuth();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
   // Product form state
   const [productForm, setProductForm] = useState({
@@ -29,7 +30,7 @@ const ProductAdmin = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/product");
+      const res = await fetch(`http://${API_URL}:8080/product`);
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -44,7 +45,7 @@ const ProductAdmin = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8080/category")
+    fetch(`http://${API_URL}:8080/category`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Failed to fetch categories:", err));
@@ -65,7 +66,7 @@ const ProductAdmin = () => {
 
 
         const response = await authenticatedFetch(
-          "http://localhost:8080/api/admin/upload-image",
+          `http://${API_URL}:8080/api/admin/upload-image`,
           {
             method: "POST",
             body: imageFormData,
@@ -95,7 +96,7 @@ const ProductAdmin = () => {
 
       if (editingProduct) {
         const response = await authenticatedFetch(
-          `http://localhost:8080/api/admin/product/${editingProduct.ID}`,
+          `http://${API_URL}:8080/api/admin/product/${editingProduct.ID}`,
           {
             method: "PUT",
             body: JSON.stringify(payload),
@@ -105,7 +106,7 @@ const ProductAdmin = () => {
         if (!response.ok) throw new Error("Failed to update");
       } else {
         const response = await authenticatedFetch(
-          "http://localhost:8080/api/admin/product",
+          `http://${API_URL}:8080/api/admin/product`,
           {
             method: "POST",
             body: JSON.stringify(payload),
@@ -151,7 +152,7 @@ const ProductAdmin = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const response = await authenticatedFetch(
-          `http://localhost:8080/api/admin/product/${id}`,
+          `http://${API_URL}:8080/api/admin/product/${id}`,
           {
             method: "DELETE",
           },

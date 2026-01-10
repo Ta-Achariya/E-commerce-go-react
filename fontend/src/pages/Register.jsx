@@ -9,12 +9,14 @@ const Register = () => {
     const [password, setPassword] = useState("")
 
     const navigate = useNavigate()
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 
 
     const handlerRegister = async (e) => {
         e.preventDefault()
 
-        const response = await fetch("http://localhost:8080/register", {
+        const response = await fetch(`http://${API_URL}:8080/register`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

@@ -9,6 +9,8 @@ const Success = () => {
     const [error, setError] = useState(null);
 
     const { authenticatedFetch , loading : authenLoading} = useAuth();
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 
     useEffect(() => {
         const sessionId = searchParams.get('session_id');
@@ -22,7 +24,7 @@ const Success = () => {
             const createOrder = async () => {
                 setLoading(true);
                 try {
-                    const response = await authenticatedFetch(`http://localhost:8080/api/payment/success?session_id=${sessionId}`, {
+                    const response = await authenticatedFetch(`http://${API_URL}:8080/api/payment/success?session_id=${sessionId}`, {
                         method: 'GET'
                     });
 

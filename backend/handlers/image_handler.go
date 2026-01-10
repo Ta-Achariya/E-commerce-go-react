@@ -15,12 +15,6 @@ import (
 
 func UploadImage(c *fiber.Ctx) error {
 	file, err := c.FormFile("image")
-	/*
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest , "Failed to upload image" , err.Error())
-		}
-	*/
-
 	if err != nil {
 		fmt.Println("ERROR: Failed to get file:", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -51,8 +45,6 @@ func UploadImage(c *fiber.Ctx) error {
 	// Upload the file to azure with specified container and specified blob name
 	_, err = client.UploadStream(context.TODO(), os.Getenv("CONTAINERNAME"), blobname, src, nil)
 	if err != nil {
-		fmt.Println("This is error from upload to stream")
-		fmt.Println(err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 

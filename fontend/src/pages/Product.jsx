@@ -20,13 +20,15 @@ const Products = () => {
 
 
   const { authenticatedFetch, isAuthenticated } = useAuth();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 
 
 
 
 
   useEffect(() => {
-    fetch("http://localhost:8080/product")
+    fetch(`http://${API_URL}:8080/product`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data)
@@ -41,7 +43,7 @@ const Products = () => {
   /*-----------------fetch category----------*/
 
   useEffect(() => {
-    fetch("http://localhost:8080/category")
+    fetch(`http://${API_URL}:8080/category`)
       .then((res) => {
         return res.json()
       })
@@ -74,7 +76,7 @@ const Products = () => {
     }
 
     try {
-      const response = await authenticatedFetch('http://localhost:8080/api/cart/item', {
+      const response = await authenticatedFetch(`http://${API_URL}:8080/api/cart/item`, {
         method: 'POST',
         body: JSON.stringify({ quantity: 1, product_id: product_id }),
       });

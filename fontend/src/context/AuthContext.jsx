@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const response = await fetch(`http://${API_URL}:8080/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

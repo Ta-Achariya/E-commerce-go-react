@@ -8,13 +8,15 @@ import { useAuth } from "../context/AuthContext";
 const Checkout = () => {
   const [loading,setLoading] = useState(false)
   const {authenticatedFetch } = useAuth()
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 
 
 
   const handleCheckout = async () => {
     setLoading(true)
 
-    const res = await authenticatedFetch("http://localhost:8080/api/checkout", {
+    const res = await authenticatedFetch(`http://${API_URL}:8080/api/checkout`, {
       method: "POST",
     });
 

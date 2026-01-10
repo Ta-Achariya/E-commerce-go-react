@@ -16,6 +16,7 @@ const CategoryAdmin = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const { authenticatedFetch } = useAuth()
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
     // Category form state
     const [categoryForm, setCategoryForm] = useState({
@@ -29,7 +30,7 @@ const CategoryAdmin = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch("http://localhost:8080/category");
+            const res = await fetch(`http://${API_URL}:8080/category`);
             const data = await res.json();
             setCategories(data);
         } catch (err) {
@@ -38,7 +39,7 @@ const CategoryAdmin = () => {
     };
 
     useEffect(() => {
-        fetch("http://localhost:8080/product")
+        fetch(`http://${API_URL}:8080/product`)
             .then((res) => res.json())
             .then((data) => setProducts(data))
             .catch((err) => console.error("Failed to fetch categories:", err));
@@ -55,14 +56,14 @@ const CategoryAdmin = () => {
         if (editingCategory) {
             //update category
             console.log(editingCategory)
-            const response = await authenticatedFetch(`http://localhost:8080/api/admin/category/${editingCategory.ID}`, {
+            const response = await authenticatedFetch(`http://${API_URL}:8080/api/admin/category/${editingCategory.ID}`, {
                 method: "PUT",
                 body: JSON.stringify(categoryForm)
             })
             if (!response.ok) throw new Error("Failed to update")
 
         } else { //create category
-            const response = await authenticatedFetch("http://localhost:8080/api/admin/category", {
+            const response = await authenticatedFetch(`http://${API_URL}:8080/api/admin/category`, {
                 method: "POST",
                 body: JSON.stringify(categoryForm)
             })
@@ -100,7 +101,7 @@ const CategoryAdmin = () => {
 
         if (window.confirm('Are you sure you want to delete this category?')) {
             try {
-                const response = await authenticatedFetch(`http://localhost:8080/api/admin/category/${id}`, {
+                const response = await authenticatedFetch(`http://${API_URL}:8080/api/admin/category/${id}`, {
                     method: 'DELETE',
                 });
 
