@@ -24,7 +24,7 @@ export default function CartPage() {
                 setLoading(true);
                 setError(null);
 
-                const response = await authenticatedFetch(`http://${API_URL}:8080/api/cart`, { method: "GET" });
+                const response = await authenticatedFetch(`${API_URL}/api/cart`, { method: "GET" });
 
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -66,7 +66,7 @@ export default function CartPage() {
         if (newQuantity < 1) return;
 
         try {
-            const response = await authenticatedFetch(`http://${API_URL}:8080/api/cart/items/${id}`, {
+            const response = await authenticatedFetch(`${API_URL}/api/cart/items/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify({quantity: newQuantity })
             });
@@ -89,7 +89,7 @@ export default function CartPage() {
     const removeItem = async (id) => {
         try {
 
-            const response = await authenticatedFetch(`http://${API_URL}:8080/api/cart/items/${id}`, {
+            const response = await authenticatedFetch(`${API_URL}/api/cart/items/${id}`, {
                 method: 'DELETE',
             });
 
@@ -111,7 +111,7 @@ export default function CartPage() {
     const handleCheckout = async () => {
         setLoading(true)
         try {
-            const response = await authenticatedFetch(`http://${API_URL}:8080/api/checkout`, {
+            const response = await authenticatedFetch(`${API_URL}/api/checkout`, {
                 method: 'POST'
             });
 

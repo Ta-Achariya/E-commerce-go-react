@@ -16,7 +16,7 @@ const Checkout = () => {
   const handleCheckout = async () => {
     setLoading(true)
 
-    const res = await authenticatedFetch(`http://${API_URL}:8080/api/checkout`, {
+    const res = await authenticatedFetch(`${API_URL}/api/checkout`, {
       method: "POST",
     });
 

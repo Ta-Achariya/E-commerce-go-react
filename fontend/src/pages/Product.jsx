@@ -28,7 +28,7 @@ const Products = () => {
 
 
   useEffect(() => {
-    fetch(`http://${API_URL}:8080/product`)
+    fetch(`${API_URL}/product`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data)
@@ -43,7 +43,7 @@ const Products = () => {
   /*-----------------fetch category----------*/
 
   useEffect(() => {
-    fetch(`http://${API_URL}:8080/category`)
+    fetch(`${API_URL}/category`)
       .then((res) => {
         return res.json()
       })
@@ -76,7 +76,7 @@ const Products = () => {
     }
 
     try {
-      const response = await authenticatedFetch(`http://${API_URL}:8080/api/cart/item`, {
+      const response = await authenticatedFetch(`${API_URL}/api/cart/item`, {
         method: 'POST',
         body: JSON.stringify({ quantity: 1, product_id: product_id }),
       });

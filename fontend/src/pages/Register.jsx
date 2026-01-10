@@ -16,7 +16,7 @@ const Register = () => {
     const handlerRegister = async (e) => {
         e.preventDefault()
 
-        const response = await fetch(`http://${API_URL}:8080/register`, {
+        const response = await fetch(`${API_URL}/register`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

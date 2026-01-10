@@ -30,7 +30,7 @@ const ProductAdmin = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://${API_URL}:8080/product`);
+      const res = await fetch(`${API_URL}/product`);
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -45,7 +45,7 @@ const ProductAdmin = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`http://${API_URL}:8080/category`)
+    fetch(`${API_URL}/category`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Failed to fetch categories:", err));
@@ -66,7 +66,7 @@ const ProductAdmin = () => {
 
 
         const response = await authenticatedFetch(
-          `http://${API_URL}:8080/api/admin/upload-image`,
+          `${API_URL}/api/admin/upload-image`,
           {
             method: "POST",
             body: imageFormData,
@@ -96,7 +96,7 @@ const ProductAdmin = () => {
 
       if (editingProduct) {
         const response = await authenticatedFetch(
-          `http://${API_URL}:8080/api/admin/product/${editingProduct.ID}`,
+          `${API_URL}/api/admin/product/${editingProduct.ID}`,
           {
             method: "PUT",
             body: JSON.stringify(payload),
@@ -106,7 +106,7 @@ const ProductAdmin = () => {
         if (!response.ok) throw new Error("Failed to update");
       } else {
         const response = await authenticatedFetch(
-          `http://${API_URL}:8080/api/admin/product`,
+          `${API_URL}/api/admin/product`,
           {
             method: "POST",
             body: JSON.stringify(payload),
@@ -152,7 +152,7 @@ const ProductAdmin = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const response = await authenticatedFetch(
-          `http://${API_URL}:8080/api/admin/product/${id}`,
+          `${API_URL}/api/admin/product/${id}`,
           {
             method: "DELETE",
           },

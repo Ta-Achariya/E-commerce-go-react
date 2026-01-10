@@ -24,7 +24,7 @@ const Success = () => {
             const createOrder = async () => {
                 setLoading(true);
                 try {
-                    const response = await authenticatedFetch(`http://${API_URL}:8080/api/payment/success?session_id=${sessionId}`, {
+                    const response = await authenticatedFetch(`${API_URL}/api/payment/success?session_id=${sessionId}`, {
                         method: 'GET'
                     });
 

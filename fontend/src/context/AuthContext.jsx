@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-      const response = await fetch(`http://${API_URL}:8080/login`, {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
 
       const data = await response.json();
 
-      // Adjust this based on what your backend returns
+      // Adjust this based on backend returns
       const userToken = data.token || data.access_token;
       const userData = data.user || data;
 
@@ -99,7 +99,9 @@ export const AuthProvider = ({ children }) => {
       headers["Content-Type"] = "application/json";
     }
 
-    const response = await fetch(url, {
+    const fullUrl = endpoint.startsWith("http") ? endpoint : `${API_URL}${endpoint}`;
+
+    const response = await fetch(fullUrl, {
       ...options,
       headers: headers,
     });
