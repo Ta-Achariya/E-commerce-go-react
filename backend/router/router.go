@@ -9,7 +9,12 @@ import (
 
 func Initialize(router *fiber.App) {
 
-	router.Use(cors.New())
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // For development. In production, use "https://frontend-domain.vercel.app"
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, HEAD, PUT, DELETE, PATCH",
+	}))
 
 	router.Get("/hello", func(c *fiber.Ctx) error {
 		return c.SendString("Hello uiia")
